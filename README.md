@@ -13,7 +13,7 @@ In base install mode they should reside in `quake/id1/`
 
 If you so desire you can always keep them in there, or you can move them to a new folder if you plan on altering them (re-vis for example).
 
-The next item you will need is the Darkplaces engine or another rtlight supporting engine, like FTEquake.
+The next item you will need is the [Darkplaces ](https://icculus.org/twilight/darkplaces/)engine or another rtlight supporting engine, like [FTE Quake](http://fte.triptohell.info/).
 
 Despite the website being dated, the Darkplaces engine project continues and gets regular updates. Although there are more [recent builds](https://icculus.org/twilight/darkplaces/files/darkplacesengineautobuild.zip), currently the most stable build I have found is one from [April 2018](https://icculus.org/twilight/darkplaces/files/darkplacesengine20180412beta1.zip).
 

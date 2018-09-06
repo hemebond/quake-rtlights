@@ -1,9 +1,9 @@
 ## DarkPlaces RTLights Website Test
 
-This is a test.
+[![e1m2](assets/e1m2.jpg)](assets/e1m2.jpg)
 
-{% for i in [8,7,7,8] %}
-{%   for j in (1..i) %}
-[![e{{ i }}m{{ j }}](assets/e{{ i }}m{{ j }}.jpg)](assets/e{{ i }}m{{ j }}.jpg)
-{%   endfor %}
-{% endfor %}
+[![e2m3](assets/e2m3.jpg)](assets/e2m3.jpg)
+
+[![e3m6](assets/e3m6.jpg)](assets/e3m6.jpg)
+
+[![e4m1](assets/e4m1.jpg)](assets/e4m1.jpg)

@@ -1,7 +1,9 @@
 # rtlights4quake
 A collection of rtlights and cubemaps for Quake engines that support real-time lighting files.
 
-## How To
+[![e3m6](docs/assets/e3m6_.jpg)](docs/assets/e3m6.jpg)
+
+## Installation
 Getting rtlights to work is a fairly straight forward process but requires a few steps.
 
 ### Files

@@ -5,7 +5,7 @@ A collection of rtlights and cubemaps for Quake engines that support real-time l
 
 ## Installation
 
-Each [release](https://github.com/hemebond/rtlights4quake/releases) has a pre-compiled pk3 file that can be placed directly into the `id1` directory.
+Each [release](https://github.com/hemebond/quake-rtlights/releases) has a pre-compiled pk3 file that can be placed directly into the `id1` directory.
 
 Alternatively you can place the `.rtlights` files into the `id1/maps/` directory, and the cubemaps into the `id1/cubemaps/` directory.
 

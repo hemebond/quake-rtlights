@@ -23,7 +23,7 @@ Once you have your maps properly VIS'd, launch DarkPlaces and turn on real-time 
   - Customize Effects
     - Water Alpha (opacity): 0.7
 
-Or via the console (`~`):
+or via the console (`~`):
 
 ```
 r_shadow_realtime_dlight 1
@@ -31,3 +31,20 @@ r_shadow_realtime_dlight_shadows 1
 r_shadow_realtime_world 1
 r_wateralpha 0.7
 ```
+
+## Arcane Dimensions ##
+
+Because the map sources are available for [Arcane Dimensions](http://www.simonoc.com/pages/design/sp/ad.htm) maps, some have been re-lit with a combination of light-maps (.lit file) and real-time lighting (.rtlights file). For these maps, both the *real-time world shadows* and *world light-maps* should be enabled via the menu:
+
+- Options
+  - Customize Lighting
+    - RT World: On
+    - RT World Lightmaps: 1
+
+or via the console (`~`)
+
+```
+r_shadow_realtime_world_lightmaps 1
+r_shadow_realtime_world_shadows 1
+```
+

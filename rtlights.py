@@ -4,6 +4,13 @@ import sys
 import argparse
 import re
 import operator
+import logging
+
+
+logging.basicConfig(level=logging.DEBUG)
+logging.warning('hello')
+
+
 
 ops = {
 	'<':  operator.lt,
@@ -281,12 +288,13 @@ parser.add_argument('--normalise-color', help='Normalise all colour values to be
 parser.add_argument('--exclude', help='Do not return any lights that match the filters.', action='store_true')
 
 args = parser.parse_args()
-# print(args)
+logging.debug(args)
 
 rtlights = []
 
 if args.infile:
 	for i, line in enumerate(args.infile.read().splitlines()):
+		logging.debug(line)
 		light = parse_rtlight(line)
 		light.idx = i
 		rtlights.append(light)
@@ -301,7 +309,9 @@ if args.filters:
 
 if args.modify:
 	for m in args.modify:
-		mod_attr, mod_operation, mod_value = re.split('([*=])', m)
+		logging.debug(m)
+
+		mod_attr, mod_operation, mod_value = re.split('([\*=])', m)
 
 		if mod_attr in ['radius', 'ambient', 'diffuse'] or mod_attr.startswith('color'):
 			try:

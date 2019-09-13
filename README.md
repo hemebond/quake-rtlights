@@ -2,7 +2,7 @@
 A collection of rtlight and cubemap files for Quake engines that support real-time lighting such as [Darkplaces](https://icculus.org/twilight/darkplaces/) and [FTE Quake](http://fte.triptohell.info/).
 
 <p align="center">
-  <img src="docs/assets/e3m6.jpg">
+    <a href=".github/e3m6.jpg"><img src=".github/e3m6_.jpg"></a>
 </p>
 
 ## Installation

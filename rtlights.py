@@ -23,6 +23,8 @@ ops = {
 mod_ops = {
 	'*':  operator.mul,
 	'=':  '=',
+	'+':  operator.add,
+	'-':  operator.sub,
 }
 
 field_names = [
@@ -126,7 +128,8 @@ class Color:
 
 
 class RTLight:
-	pass
+	def __str__(self):
+		return pretty_format_rtlight(self)
 
 
 def pretty_format_rtlight(light):
@@ -251,6 +254,8 @@ def parse_rtlight(light_str):
 
 
 def my_filter(list_item, attr_name, comparison, value):
+	logging.debug("%s, %s, %s, %s" % (list_item, attr_name, comparison, value))
+
 	if value in field_names:
 		value = getattr(list_item, value)
 
@@ -266,13 +271,22 @@ def my_filter(list_item, attr_name, comparison, value):
 			attr = getattr(parent_attr, field_sub)
 		else:
 			attr = getattr(list_item, attr_name)
-
-		operation = ops.get(comparison)
-
-		return operation(attr, value)
 	except AttributeError as e:
-		print(e)
+		logging.error(e)
 		return False
+
+	try:
+		operation = ops.get(comparison)
+	except TypeError as e:
+		# the comparison is wrong
+		logging.error('Could not find comparison %s' % comparison)
+		logging.error(e)
+		return False
+
+	logging.debug("%s, %s, %s, %s, %s" % (field_main, field_sub, parent_attr, attr, operation))
+	logging.debug("%s" % operation(attr, value))
+
+	return operation(attr, value)
 
 
 
@@ -285,7 +299,7 @@ parser.add_argument('--modify', help='Modify light values', nargs='*')
 parser.add_argument('--only-matches', help='Only print out lights that matched all the filters', action='store_true')
 parser.add_argument('--pretty', help='Print out the light data in a human-readable format', action='store_true')
 parser.add_argument('--normalise-color', help='Normalise all colour values to be between 0 and 1', action='store_true')
-parser.add_argument('--exclude', help='Do not return any lights that match the filters.', action='store_true')
+# parser.add_argument('--exclude', help='Do not return any lights that match the filters.', action='store_true')
 
 args = parser.parse_args()
 logging.debug(args)
@@ -295,65 +309,90 @@ rtlights = []
 if args.infile:
 	for i, line in enumerate(args.infile.read().splitlines()):
 		logging.debug(line)
-		light = parse_rtlight(line)
-		light.idx = i
-		rtlights.append(light)
+		if line:
+			light = parse_rtlight(line)
+			light.idx = i
+			rtlights.append(light)
 	args.infile.close()
 
-filtered_list = list(rtlights)
+unfiltered_list = list(rtlights)
+
+
+def test_light(light, filters):
+	for f in filters:
+		attr_name, comparison, value = re.split('([!<>=]+)', f)
+
+		if my_filter(light, attr_name, comparison, value) is False:
+			return False
+
+	return True
+
 
 if args.filters:
-	for fltr in args.filters:
-		attr_name, comparison, value = re.split('([!<>=]+)', fltr)
-		filtered_list = filter(lambda x: my_filter(x, attr_name, comparison, value), filtered_list)
+	filtered_list = []
+
+	for light in unfiltered_list:
+		if test_light(light, args.filters):
+			filtered_list.append(light)
+else:
+	filtered_list = unfiltered_list
+
 
 if args.modify:
-	for m in args.modify:
-		logging.debug(m)
+	for light in filtered_list:
+		logging.debug(light.origin.x)
 
-		mod_attr, mod_operation, mod_value = re.split('([\*=])', m)
+		for m in args.modify:
+			mod_attr, mod_operation, mod_value = re.split('([\*\-\+\=])', m)
 
-		if mod_attr in ['radius', 'ambient', 'diffuse'] or mod_attr.startswith('color'):
-			try:
-				mod_value = float(mod_value)
-			except:
-				pass
-
-
-		operation = mod_ops.get(mod_operation)
-
-		for light in filtered_list:
 			if '.' in mod_attr:
 				attr_name, sub_attr_name = mod_attr.split('.')
+			else:
+				attr_name, sub_attr_name = mod_attr, None
+
+			if attr_name in ['radius', 'ambient', 'diffuse', 'color', 'origin']:
+				logging.debug("%s, %s, %s" % (mod_attr, mod_operation, mod_value))
+
+				try:
+					mod_value = float(mod_value)
+				except:
+					pass
+
+				operation = mod_ops.get(mod_operation)
 
 				attr_value = getattr(light, attr_name)
-				sub_attr_value = getattr(attr_value, sub_attr_name)
 
-				if operation == '=':
-					new_sub_attr_value = mod_value
-				else:
-					new_sub_attr_value = operation(sub_attr_value, mod_value)
+				logging.debug("%s, %s, %s" % (attr_name, operation, attr_value))
 
-				setattr(attr_value, sub_attr_name, new_sub_attr_value)
-				setattr(light, attr_name, attr_value)
-			else:
-				attr_value = getattr(light, mod_attr)
+				if sub_attr_name:
+					logging.debug('Modifying a sub-attribute')
 
-				if isinstance(attr_value, (Point, Color)):
-					for sub_attr_name, sub_attr_value in vars(attr_value).items():
-						if operation == '=':
-							new_sub_attr_value = mod_value
-						else:
-							new_sub_attr_value = operation(sub_attr_value, mod_value)
-						setattr(attr_value, sub_attr_name, new_sub_attr_value)
-					new_value = attr_value
-				else:
+					sub_attr_value = getattr(attr_value, sub_attr_name)
+
 					if operation == '=':
-						new_value = mod_value
+						new_sub_attr_value = mod_value
 					else:
-						new_value = operation(attr_value, mod_value)
+						new_sub_attr_value = operation(sub_attr_value, mod_value)
 
-				setattr(light, mod_attr, new_value)
+					setattr(attr_value, sub_attr_name, new_sub_attr_value)
+					setattr(light, attr_name, attr_value)
+				else:
+					if isinstance(attr_value, (Point, Color)):
+						for sub_attr_name, sub_attr_value in vars(attr_value).items():
+							if operation == '=':
+								new_sub_attr_value = mod_value
+							else:
+								new_sub_attr_value = operation(sub_attr_value, mod_value)
+							setattr(attr_value, sub_attr_name, new_sub_attr_value)
+						new_value = attr_value
+					else:
+						if operation == '=':
+							new_value = mod_value
+						else:
+							new_value = operation(attr_value, mod_value)
+
+					setattr(light, mod_attr, new_value)
+
 
 
 if args.normalise_color:
@@ -381,4 +420,4 @@ else:
 		rtlights[light.idx] = light
 
 	for light in rtlights:
-		print(line_format_rtlight(light))
+		print(render_func(light))

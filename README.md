@@ -7,14 +7,11 @@ A collection of rtlight and cubemap files for Quake engines that support real-ti
 
 ## Installation
 
-Each [release](https://github.com/hemebond/quake-rtlights/releases) has a pre-compiled pk3 file that can be placed directly into the `id1` directory.
+Each [release](https://github.com/hemebond/quake-rtlights/releases) has a pre-compiled pk3 file that can be placed directly into the corresponding mod directory, e.g., `id1`.
 
 Alternatively you can place individual `.rtlights` files into the appropriate `mod/maps` directory, and cubemaps into the `mod/cubemaps/` directory.
 
 ## Usage ##
-
-### Re-VIS
-Re-VIS-ing the original maps means recompiling parts of the original maps so that transparent water works correctly and is done using a tool such as [vispatch](http://vispatch.sourceforge.net/).
 
 ### Settings
 Once you have your maps properly VIS'd, launch DarkPlaces and turn on real-time lighting, either via the menus:
